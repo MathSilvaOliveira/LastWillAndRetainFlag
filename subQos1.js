@@ -1,27 +1,23 @@
 import mqtt from "mqtt";
 
-// CONFIGURAÇÃO ESSENCIAL: 
-// 1. clientId fixo (para o Broker saber quem é você quando voltar)
-// 2. clean: false (pede para o Broker manter sua assinatura e mensagens pendentes)
-//clean: false: É o comando que diz ao Broker: "Se eu cair, mantenha minha assinatura do tópico aula/qos ativa e guarde as 
-// mensagens QoS 1 que chegarem para mim".
 const options = {
-  clientId: "subscriber_01", 
-  clean: false 
+  clientId: "irrigacao_controller", 
+  clean: false                      
 };
 
 const client = mqtt.connect("mqtt://localhost:1883", options);
 
 client.on("connect", (connack) => {
-  // connack.sessionPresent indica se o Broker já tinha sua sessão guardada
-  console.log(`SUB QoS1: conectado (Sessão recuperada: ${connack.sessionPresent})`);
-  
-  // No QoS 1 com clean:false, você só precisa dar subscribe uma vez na vida.
-  // Mas deixar aqui garante que o tópico seja assinado na primeira execução.
-  
-  client.subscribe("aula/qos", { qos: 1 });
+  console.log(`SUB [Nível Água]: conectado (Sessão recuperada: ${connack.sessionPresent})`);
+  client.subscribe("estufa/agua/nivel", { qos: 1 });
 });
 
 client.on("message", (topic, msg) => {
-  console.log("SUB QoS1 recebeu:", msg.toString());
+  const data = JSON.parse(msg.toString());
+  console.log(`[${data.timestamp}] Nível Reservatório: ${data.valor}${data.unidade}`);
+
+
+  if (data.valor < 20) {
+    console.log(" ALERTA: Nível crítico — acionar bomba!");
+  }
 });

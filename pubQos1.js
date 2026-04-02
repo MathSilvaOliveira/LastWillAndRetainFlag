@@ -3,17 +3,23 @@ import mqtt from "mqtt";
 const client = mqtt.connect("mqtt://localhost:1883");
 
 client.on("connect", () => {
-  console.log("PUB QoS1: conectado");
-  let i = 0;
+  console.log("Sensor 2 [Nível Água]: conectado");
 
-  const t = setInterval(() => {
-    client.publish("aula/qos", `msg ${i} (QoS1)`, { qos: 1 });
-    console.log("PUB QoS1 enviou:", i);
-    i++;
+  setInterval(() => {
+    const payload = JSON.stringify({
+      sensor: "nivel_reservatorio",
+      valor: +(Math.random() * 100).toFixed(1),
+      unidade: "%",
+      timestamp: new Date().toISOString(),
+    });
 
-    if (i === 10) {
-      clearInterval(t);
-      client.end();
-    }
-  }, 500);
+    client.publish("estufa/agua/nivel", payload, { qos: 1 });
+    console.log("PUB enviado:", payload);
+  }, 3000); 
+});
+
+client.on("packetsend", (packet) => {
+  if (packet.cmd === "publish") {
+    console.log("Aguardando PUBACK do broker...");
+  }
 });

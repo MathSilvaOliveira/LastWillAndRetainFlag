@@ -3,17 +3,17 @@ import mqtt from "mqtt";
 const client = mqtt.connect("mqtt://localhost:1883");
 
 client.on("connect", () => {
-  console.log("PUB QoS0: conectado");
-  let i = 0;
+  console.log("Sensor 1 [Temp Ambiente]: conectado");
 
-  const t = setInterval(() => {
-    client.publish("aula/qos", `msg ${i} (QoS0)`, { qos: 0 });
-    console.log("PUB QoS0 enviou:", i);
-    i++;
+  setInterval(() => {
+    const payload = JSON.stringify({
+      sensor: "temp_ambiente",
+      valor: +(20 + Math.random() * 10).toFixed(2),
+      unidade: "°C",
+      timestamp: new Date().toISOString(),
+    });
 
-    if (i === 10) {
-      clearInterval(t);
-      client.end();
-    }
-  }, 500);
+    client.publish("estufa/temp/ambiente", payload, { qos: 0 });
+    console.log("PUB enviado:", payload);
+  }, 5000);
 });
