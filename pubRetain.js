@@ -3,7 +3,7 @@ import mqtt from "mqtt";
 const client = mqtt.connect("mqtt://localhost:1883");
 
 client.on("connect", () => {
-  console.log("📤 PUB com RETAIN FLAG: conectado");
+  console.log("PUB com RETAIN FLAG: conectado");
 
   const statusMsg = JSON.stringify({
     sensor: "temperatura_criogenica",

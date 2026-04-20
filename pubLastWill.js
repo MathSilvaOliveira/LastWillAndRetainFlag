@@ -38,9 +38,15 @@ client.on("error", (error) => {
   console.error("Erro:", error);
 });
 
-// Graceful shutdown
+// Ctrl+C → queda inesperada → LWT dispara
 process.on("SIGINT", () => {
-  console.log("\n Desconectando normalmente...");
+  console.log("\n Simulando QUEDA ABRUPTA (LWT será publicado)...");
+  process.exit(1);
+});
+
+// kill <PID> → desconexão limpa → LWT NÃO dispara
+process.on("SIGTERM", () => {
+  console.log("\n Desconectando normalmente (LWT não será publicado)...");
   client.end(false, () => {
     console.log("Desconectado!");
     process.exit(0);
