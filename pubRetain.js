@@ -7,7 +7,7 @@ client.on("connect", () => {
 
   const statusMsg = JSON.stringify({
     sensor: "temperatura_criogenica",
-    valor: -196,
+    valor: -100,
     unidade: "°C",
     timestamp: new Date().toISOString(),
     status: "ativo"
